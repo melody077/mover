@@ -141,13 +141,12 @@
 @media (max-width: 768px) {
     .pm-popup {
         min-width: 90vw;
-        max-height: 80vh;
+        max-height: 85vh;
     }
     
     #prompt-mover-container {
-        max-height: 70vh;
+        max-height: 75vh;
         overflow-y: auto;
-        padding-bottom: 80px;
     }
     
     #prompt-mover-container .pm-section {
@@ -167,19 +166,6 @@
     #prompt-mover-container .pm-row label {
         min-width: auto;
         font-size: 0.9em;
-    }
-    
-    #prompt-mover-container .pm-actions {
-        position: fixed;
-        bottom: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--SmartThemeBlurTintColor);
-        padding: 10px 20px;
-        border-radius: 10px;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-        z-index: 9999;
-        gap: 15px;
     }
     
     #prompt-mover-container button {
