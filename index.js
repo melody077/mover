@@ -88,11 +88,9 @@ function createPopupHtml(presets) {
                         ${presetOptions}
                     </select>
                 </div>
-                <div class="pm-row">
-                    <label>프롬프트:</label>
-                    <button id="pm-source-prompt-btn" class="menu_button" disabled>프리셋을 먼저 선택</button>
+                <div class="pm-prompt-list" id="pm-source-prompts">
+                    <div style="padding: 10px; text-align: center;">프리셋을 선택하세요</div>
                 </div>
-                <div id="pm-source-selected" class="pm-selected-info" style="display:none;"></div>
             </div>
             
             <div class="pm-section">
@@ -105,16 +103,14 @@ function createPopupHtml(presets) {
                     </select>
                 </div>
                 <div class="pm-row">
-                    <label>삽입 위치:</label>
-                    <button id="pm-target-prompt-btn" class="menu_button" disabled>프리셋을 먼저 선택</button>
-                </div>
-                <div id="pm-target-selected" class="pm-selected-info" style="display:none;"></div>
-                <div class="pm-row">
                     <label>삽입:</label>
                     <select id="pm-insert-mode">
                         <option value="after">뒤에</option>
                         <option value="before">앞에</option>
                     </select>
+                </div>
+                <div class="pm-prompt-list" id="pm-target-prompts">
+                    <div style="padding: 10px; text-align: center;">프리셋을 선택하세요</div>
                 </div>
             </div>
             
@@ -126,13 +122,23 @@ function createPopupHtml(presets) {
     `;
 }
 
-function createPromptSelectorHtml(prompts, title) {
-    const items = prompts.map((prompt, index) => {
+function renderPromptsList(container, listId, prompts, selectedIndex, onSelect) {
+    const listElement = container.querySelector(`#${listId}`);
+    if (!listElement) return;
+    
+    if (!prompts || prompts.length === 0) {
+        listElement.innerHTML = '<div style="padding: 10px; text-align: center;">프롬프트 없음</div>';
+        return;
+    }
+    
+    listElement.innerHTML = prompts.map((prompt, index) => {
+        const isSelected = index === selectedIndex;
         const name = prompt.name || prompt.identifier || 'Unnamed';
         const identifier = prompt.identifier || '';
         const markerIcon = prompt.marker ? '📍 ' : '';
+        
         return `
-            <div class="pm-prompt-item" data-index="${index}">
+            <div class="pm-prompt-item ${isSelected ? 'selected' : ''}" data-index="${index}">
                 <span class="pm-prompt-index">#${index + 1}</span>
                 <span class="pm-prompt-name">${markerIcon}${name}</span>
                 <span class="pm-prompt-identifier">[${identifier}]</span>
@@ -140,48 +146,9 @@ function createPromptSelectorHtml(prompts, title) {
         `;
     }).join('');
     
-    return `
-        <div class="pm-prompt-selector">
-            <div class="pm-selector-title">${title}</div>
-            <div class="pm-prompt-list-full">
-                ${items || '<div style="padding: 20px; text-align: center;">프롬프트 없음</div>'}
-            </div>
-        </div>
-    `;
-}
-
-async function openPromptSelector(prompts, title) {
-    return new Promise((resolve) => {
-        const selectorContainer = document.createElement('div');
-        selectorContainer.innerHTML = createPromptSelectorHtml(prompts, title);
-        
-        selectorContainer.querySelectorAll('.pm-prompt-item').forEach(item => {
-            item.addEventListener('click', () => {
-                resolve(parseInt(item.dataset.index));
-            });
-        });
-        
-        callGenericPopup(selectorContainer, POPUP_TYPE.TEXT, '', { 
-            okButton: '취소', 
-            cancelButton: false,
-            wide: true 
-        }).then(() => resolve(-1));
+    listElement.querySelectorAll('.pm-prompt-item').forEach(item => {
+        item.addEventListener('click', () => onSelect(parseInt(item.dataset.index)));
     });
-}
-
-function updateSelectedDisplay(container, elementId, prompts, selectedIndex) {
-    const el = container.querySelector(`#${elementId}`);
-    if (!el) return;
-    
-    if (selectedIndex >= 0 && prompts[selectedIndex]) {
-        const p = prompts[selectedIndex];
-        const name = p.name || p.identifier || 'Unnamed';
-        const markerIcon = p.marker ? '📍 ' : '';
-        el.innerHTML = `<strong>#${selectedIndex + 1}</strong> ${markerIcon}${name}`;
-        el.style.display = 'block';
-    } else {
-        el.style.display = 'none';
-    }
 }
 
 function updateButtons(container) {
@@ -260,16 +227,25 @@ async function performOperation(container, removeFromSource) {
         
         toastr.success(removeFromSource ? '이동 완료' : '복사 완료');
         
-        // Refresh after operation
+        // Refresh lists
         sourcePrompts = getPromptsFromPreset(openai_settings[sourceIndex]);
         targetPrompts = getPromptsFromPreset(openai_settings[targetIndex]);
         selectedSourcePromptIndex = -1;
         selectedTargetPromptIndex = -1;
         
-        updateSelectedDisplay(container, 'pm-source-selected', sourcePrompts, -1);
-        updateSelectedDisplay(container, 'pm-target-selected', targetPrompts, -1);
-        container.querySelector('#pm-source-prompt-btn').textContent = '프롬프트 선택';
-        container.querySelector('#pm-target-prompt-btn').textContent = '삽입 위치 선택';
+        const srcHandler = idx => {
+            selectedSourcePromptIndex = idx;
+            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, idx, srcHandler);
+            updateButtons(container);
+        };
+        const tgtHandler = idx => {
+            selectedTargetPromptIndex = idx;
+            renderPromptsList(container, 'pm-target-prompts', targetPrompts, idx, tgtHandler);
+            updateButtons(container);
+        };
+        
+        renderPromptsList(container, 'pm-source-prompts', sourcePrompts, -1, srcHandler);
+        renderPromptsList(container, 'pm-target-prompts', targetPrompts, -1, tgtHandler);
         updateButtons(container);
         
     } catch (error) {
@@ -299,53 +275,32 @@ async function openPromptMoverPopup() {
         const container = document.createElement('div');
         container.innerHTML = createPopupHtml(presets);
         
-        const srcPromptBtn = container.querySelector('#pm-source-prompt-btn');
-        const tgtPromptBtn = container.querySelector('#pm-target-prompt-btn');
+        const srcHandler = idx => {
+            selectedSourcePromptIndex = idx;
+            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, idx, srcHandler);
+            updateButtons(container);
+        };
         
-        // Source preset change
+        const tgtHandler = idx => {
+            selectedTargetPromptIndex = idx;
+            renderPromptsList(container, 'pm-target-prompts', targetPrompts, idx, tgtHandler);
+            updateButtons(container);
+        };
+        
         container.querySelector('#pm-source-preset')?.addEventListener('change', e => {
             sourcePresetName = e.target.value;
             selectedSourcePromptIndex = -1;
             sourcePrompts = sourcePresetName ? getPromptsFromPreset(openai_settings[openai_setting_names[sourcePresetName]]) : [];
-            srcPromptBtn.disabled = !sourcePresetName || sourcePrompts.length === 0;
-            srcPromptBtn.textContent = sourcePresetName ? '프롬프트 선택' : '프리셋을 먼저 선택';
-            updateSelectedDisplay(container, 'pm-source-selected', sourcePrompts, -1);
+            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, -1, srcHandler);
             updateButtons(container);
         });
         
-        // Target preset change
         container.querySelector('#pm-target-preset')?.addEventListener('change', e => {
             targetPresetName = e.target.value;
             selectedTargetPromptIndex = -1;
             targetPrompts = targetPresetName ? getPromptsFromPreset(openai_settings[openai_setting_names[targetPresetName]]) : [];
-            tgtPromptBtn.disabled = !targetPresetName || targetPrompts.length === 0;
-            tgtPromptBtn.textContent = targetPresetName ? '삽입 위치 선택' : '프리셋을 먼저 선택';
-            updateSelectedDisplay(container, 'pm-target-selected', targetPrompts, -1);
+            renderPromptsList(container, 'pm-target-prompts', targetPrompts, -1, tgtHandler);
             updateButtons(container);
-        });
-        
-        // Source prompt selector button
-        srcPromptBtn?.addEventListener('click', async () => {
-            if (sourcePrompts.length === 0) return;
-            const idx = await openPromptSelector(sourcePrompts, '이동할 프롬프트 선택');
-            if (idx >= 0) {
-                selectedSourcePromptIndex = idx;
-                srcPromptBtn.textContent = `#${idx + 1} 선택됨`;
-                updateSelectedDisplay(container, 'pm-source-selected', sourcePrompts, idx);
-                updateButtons(container);
-            }
-        });
-        
-        // Target prompt selector button
-        tgtPromptBtn?.addEventListener('click', async () => {
-            if (targetPrompts.length === 0) return;
-            const idx = await openPromptSelector(targetPrompts, '삽입 위치 선택 (이 프롬프트 뒤/앞에 삽입)');
-            if (idx >= 0) {
-                selectedTargetPromptIndex = idx;
-                tgtPromptBtn.textContent = `#${idx + 1} 위치 선택됨`;
-                updateSelectedDisplay(container, 'pm-target-selected', targetPrompts, idx);
-                updateButtons(container);
-            }
         });
         
         container.querySelector('#pm-insert-mode')?.addEventListener('change', e => {

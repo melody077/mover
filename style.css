@@ -44,62 +44,11 @@
 }
 
 #prompt-mover-container .pm-prompt-list {
-    max-height: 80px;
+    max-height: 200px;
     overflow-y: auto;
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 3px;
     background-color: var(--SmartThemeBlurTintColor);
-}
-
-#prompt-mover-container .pm-selected-info {
-    padding: 8px 10px;
-    background-color: var(--SmartThemeChatTintColor);
-    border-radius: 5px;
-    margin-top: 5px;
-    font-size: 0.9em;
-}
-
-/* Prompt selector popup */
-.pm-prompt-selector {
-    display: flex;
-    flex-direction: column;
-    max-height: 70vh;
-}
-
-.pm-selector-title {
-    font-weight: bold;
-    font-size: 1.1em;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--SmartThemeBorderColor);
-}
-
-.pm-prompt-list-full {
-    overflow-y: auto;
-    max-height: 60vh;
-    border: 1px solid var(--SmartThemeBorderColor);
-    border-radius: 5px;
-}
-
-.pm-prompt-list-full .pm-prompt-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    gap: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--SmartThemeBorderColor);
-}
-
-.pm-prompt-list-full .pm-prompt-item:last-child {
-    border-bottom: none;
-}
-
-.pm-prompt-list-full .pm-prompt-item:hover {
-    background-color: var(--SmartThemeQuoteColor);
-}
-
-.pm-prompt-list-full .pm-prompt-item:active {
-    background-color: var(--SmartThemeChatTintColor);
 }
 
 #prompt-mover-container .pm-prompt-item {
@@ -192,21 +141,6 @@
 @media (max-width: 768px) {
     .pm-popup {
         min-width: 90vw;
-        max-height: 85vh;
-        overflow-y: auto;
-    }
-    
-    #prompt-mover-container {
-        max-height: 75vh;
-        overflow-y: auto;
-    }
-    
-    #prompt-mover-container .pm-section {
-        padding: 8px;
-    }
-    
-    #prompt-mover-container .pm-prompt-list {
-        max-height: 70px;
     }
     
     #prompt-mover-container .pm-row {
@@ -216,19 +150,5 @@
     
     #prompt-mover-container .pm-row label {
         min-width: auto;
-    }
-    
-    #prompt-mover-container .pm-actions {
-        position: sticky;
-        bottom: 0;
-        background-color: var(--SmartThemeBlurTintColor);
-        padding: 10px;
-        margin: 0 -10px -10px -10px;
-        border-top: 1px solid var(--SmartThemeBorderColor);
-    }
-    
-    #prompt-mover-container button {
-        padding: 12px 20px;
-        font-size: 1em;
     }
 }
