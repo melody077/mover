@@ -318,23 +318,33 @@ async function openPromptMoverPopup() {
     }
 }
 
-function addMenuButton() {
+function addExtensionPanel() {
     const tryAdd = () => {
-        if (document.getElementById('pm-wand-btn')) return true;
+        if (document.getElementById('prompt_mover_container')) return true;
         
-        const menu = document.getElementById('extensionsMenu');
-        if (!menu) return false;
+        const settingsPanel = document.getElementById('extensions_settings2');
+        if (!settingsPanel) return false;
         
-        const wrapper = document.createElement('div');
-        wrapper.className = 'extension_container';
-        wrapper.innerHTML = `
-            <div id="pm-wand-btn" class="list-group-item flex-container flexGap5" style="cursor:pointer;">
-                <div class="fa-solid fa-arrows-left-right extensionsMenuExtensionButton"></div>
-                <span>Prompt Mover</span>
+        const container = document.createElement('div');
+        container.id = 'prompt_mover_container';
+        container.className = 'extension_container';
+        container.innerHTML = `
+            <div class="inline-drawer">
+                <div class="inline-drawer-toggle inline-drawer-header">
+                    <b>Prompt Mover</b>
+                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+                </div>
+                <div class="inline-drawer-content">
+                    <p style="margin: 5px 0;">프리셋 간에 프롬프트를 복사/이동합니다.</p>
+                    <div id="pm-open-btn" class="menu_button menu_button_icon">
+                        <i class="fa-solid fa-arrows-left-right"></i>
+                        <span>Prompt Mover 열기</span>
+                    </div>
+                </div>
             </div>
         `;
-        wrapper.querySelector('#pm-wand-btn').addEventListener('click', openPromptMoverPopup);
-        menu.appendChild(wrapper);
+        container.querySelector('#pm-open-btn').addEventListener('click', openPromptMoverPopup);
+        settingsPanel.appendChild(container);
         return true;
     };
     
@@ -374,7 +384,7 @@ jQuery(async () => {
     console.log(`[${extensionName}] Loading...`);
     try {
         await initImports();
-        addMenuButton();
+        addExtensionPanel();
         addPromptManagerButton();
         console.log(`[${extensionName}] Loaded successfully`);
     } catch (error) {
