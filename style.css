@@ -51,6 +51,57 @@
     background-color: var(--SmartThemeBlurTintColor);
 }
 
+#prompt-mover-container .pm-selected-info {
+    padding: 8px 10px;
+    background-color: var(--SmartThemeChatTintColor);
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* Prompt selector popup */
+.pm-prompt-selector {
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+}
+
+.pm-selector-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+}
+
+.pm-prompt-list-full {
+    overflow-y: auto;
+    max-height: 60vh;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 5px;
+}
+
+.pm-prompt-list-full .pm-prompt-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    gap: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+}
+
+.pm-prompt-list-full .pm-prompt-item:last-child {
+    border-bottom: none;
+}
+
+.pm-prompt-list-full .pm-prompt-item:hover {
+    background-color: var(--SmartThemeQuoteColor);
+}
+
+.pm-prompt-list-full .pm-prompt-item:active {
+    background-color: var(--SmartThemeChatTintColor);
+}
+
 #prompt-mover-container .pm-prompt-item {
     display: flex;
     align-items: center;
