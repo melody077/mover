@@ -72,6 +72,40 @@
     background-color: var(--SmartThemeChatTintColor);
 }
 
+/* 삽입 슬롯 스타일 */
+.pm-insert-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 0.85em;
+    color: var(--SmartThemeQuoteColor);
+    border-bottom: 1px dashed var(--SmartThemeBorderColor);
+    transition: all 0.15s ease;
+}
+
+.pm-insert-slot:hover {
+    background-color: rgba(100, 200, 100, 0.15);
+    color: var(--SmartThemeBodyColor);
+}
+
+.pm-insert-slot.selected {
+    background-color: rgba(100, 200, 100, 0.3);
+    color: var(--SmartThemeBodyColor);
+    font-weight: bold;
+    border-color: rgba(100, 200, 100, 0.5);
+}
+
+.pm-slot-icon {
+    font-size: 0.9em;
+}
+
+.pm-target-item {
+    opacity: 0.8;
+}
+
 #prompt-mover-container .pm-prompt-index {
     min-width: 30px;
     font-weight: bold;

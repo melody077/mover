@@ -28,8 +28,7 @@ let targetPresetName = '';
 let sourcePrompts = [];
 let targetPrompts = [];
 let selectedSourcePromptIndex = -1;
-let selectedTargetPromptIndex = -1;
-let insertMode = 'after';
+let insertPosition = -1; // The exact index to insert at
 
 /**
  * Load all OpenAI presets
@@ -94,19 +93,12 @@ function createPopupHtml(presets) {
             </div>
             
             <div class="pm-section">
-                <div class="pm-section-title">📥 대상 프리셋 (Target)</div>
+                <div class="pm-section-title">📥 대상 프리셋 (Target) - 삽입할 위치를 선택</div>
                 <div class="pm-row">
                     <label>프리셋:</label>
                     <select id="pm-target-preset">
                         <option value="">-- 선택 --</option>
                         ${presetOptions}
-                    </select>
-                </div>
-                <div class="pm-row">
-                    <label>삽입:</label>
-                    <select id="pm-insert-mode">
-                        <option value="after">뒤에</option>
-                        <option value="before">앞에</option>
                     </select>
                 </div>
                 <div class="pm-prompt-list" id="pm-target-prompts">
@@ -121,8 +113,8 @@ function createPopupHtml(presets) {
     `;
 }
 
-function renderPromptsList(container, listId, prompts, selectedIndex, onSelect) {
-    const listElement = container.querySelector(`#${listId}`);
+function renderSourceList(container, prompts, selectedIndex, onSelect) {
+    const listElement = container.querySelector('#pm-source-prompts');
     if (!listElement) return;
     
     if (!prompts || prompts.length === 0) {
@@ -135,7 +127,6 @@ function renderPromptsList(container, listId, prompts, selectedIndex, onSelect) 
         const name = prompt.name || prompt.identifier || 'Unnamed';
         const identifier = prompt.identifier || '';
         const markerIcon = prompt.marker ? '📍 ' : '';
-        
         return `
             <div class="pm-prompt-item ${isSelected ? 'selected' : ''}" data-index="${index}">
                 <span class="pm-prompt-index">#${index + 1}</span>
@@ -150,19 +141,67 @@ function renderPromptsList(container, listId, prompts, selectedIndex, onSelect) 
     });
 }
 
+function renderTargetListWithSlots(container, prompts, selectedSlot, onSelectSlot) {
+    const listElement = container.querySelector('#pm-target-prompts');
+    if (!listElement) return;
+    
+    if (!prompts || prompts.length === 0) {
+        listElement.innerHTML = `
+            <div class="pm-insert-slot ${selectedSlot === 0 ? 'selected' : ''}" data-slot="0">
+                <span class="pm-slot-icon">➕</span> 여기에 삽입
+            </div>
+        `;
+        listElement.querySelector('.pm-insert-slot')?.addEventListener('click', () => onSelectSlot(0));
+        return;
+    }
+    
+    let html = '';
+    
+    // Slot before first item
+    html += `<div class="pm-insert-slot ${selectedSlot === 0 ? 'selected' : ''}" data-slot="0">
+        <span class="pm-slot-icon">➕</span> 맨 위에 삽입
+    </div>`;
+    
+    prompts.forEach((prompt, index) => {
+        const name = prompt.name || prompt.identifier || 'Unnamed';
+        const identifier = prompt.identifier || '';
+        const markerIcon = prompt.marker ? '📍 ' : '';
+        
+        html += `
+            <div class="pm-prompt-item pm-target-item" data-index="${index}">
+                <span class="pm-prompt-index">#${index + 1}</span>
+                <span class="pm-prompt-name">${markerIcon}${name}</span>
+                <span class="pm-prompt-identifier">[${identifier}]</span>
+            </div>
+        `;
+        
+        // Slot after each item
+        const slotIdx = index + 1;
+        html += `<div class="pm-insert-slot ${selectedSlot === slotIdx ? 'selected' : ''}" data-slot="${slotIdx}">
+            <span class="pm-slot-icon">➕</span> 여기에 삽입
+        </div>`;
+    });
+    
+    listElement.innerHTML = html;
+    
+    listElement.querySelectorAll('.pm-insert-slot').forEach(slot => {
+        slot.addEventListener('click', () => onSelectSlot(parseInt(slot.dataset.slot)));
+    });
+}
+
 function updateButtons(container) {
     const moveBtn = container.querySelector('#pm-btn-move');
     
     const canMove = sourcePresetName && targetPresetName && 
-                    selectedSourcePromptIndex >= 0 && selectedTargetPromptIndex >= 0 &&
+                    selectedSourcePromptIndex >= 0 && insertPosition >= 0 &&
                     sourcePresetName !== targetPresetName;
     
     if (moveBtn) moveBtn.disabled = !canMove;
 }
 
 async function performOperation(container, removeFromSource) {
-    if (selectedSourcePromptIndex < 0 || selectedTargetPromptIndex < 0) {
-        toastr.error('프롬프트를 선택해주세요');
+    if (selectedSourcePromptIndex < 0 || insertPosition < 0) {
+        toastr.error('프롬프트와 삽입 위치를 선택해주세요');
         return;
     }
     
@@ -186,7 +225,7 @@ async function performOperation(container, removeFromSource) {
         promptToCopy.name = `${promptToCopy.name} (${counter})`;
     }
     
-    const insertPos = insertMode === 'after' ? selectedTargetPromptIndex + 1 : selectedTargetPromptIndex;
+    const insertPos = insertPosition;
     
     // Update target preset
     const targetPreset = JSON.parse(JSON.stringify(openai_settings[targetIndex]));
@@ -228,21 +267,21 @@ async function performOperation(container, removeFromSource) {
         sourcePrompts = getPromptsFromPreset(openai_settings[sourceIndex]);
         targetPrompts = getPromptsFromPreset(openai_settings[targetIndex]);
         selectedSourcePromptIndex = -1;
-        selectedTargetPromptIndex = -1;
+        insertPosition = -1;
         
         const srcHandler = idx => {
             selectedSourcePromptIndex = idx;
-            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, idx, srcHandler);
+            renderSourceList(container, sourcePrompts, idx, srcHandler);
             updateButtons(container);
         };
-        const tgtHandler = idx => {
-            selectedTargetPromptIndex = idx;
-            renderPromptsList(container, 'pm-target-prompts', targetPrompts, idx, tgtHandler);
+        const slotHandler = slot => {
+            insertPosition = slot;
+            renderTargetListWithSlots(container, targetPrompts, slot, slotHandler);
             updateButtons(container);
         };
         
-        renderPromptsList(container, 'pm-source-prompts', sourcePrompts, -1, srcHandler);
-        renderPromptsList(container, 'pm-target-prompts', targetPrompts, -1, tgtHandler);
+        renderSourceList(container, sourcePrompts, -1, srcHandler);
+        renderTargetListWithSlots(container, targetPrompts, -1, slotHandler);
         updateButtons(container);
         
     } catch (error) {
@@ -266,21 +305,20 @@ async function openPromptMoverPopup() {
         sourcePrompts = [];
         targetPrompts = [];
         selectedSourcePromptIndex = -1;
-        selectedTargetPromptIndex = -1;
-        insertMode = 'after';
+        insertPosition = -1;
         
         const container = document.createElement('div');
         container.innerHTML = createPopupHtml(presets);
         
         const srcHandler = idx => {
             selectedSourcePromptIndex = idx;
-            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, idx, srcHandler);
+            renderSourceList(container, sourcePrompts, idx, srcHandler);
             updateButtons(container);
         };
         
-        const tgtHandler = idx => {
-            selectedTargetPromptIndex = idx;
-            renderPromptsList(container, 'pm-target-prompts', targetPrompts, idx, tgtHandler);
+        const slotHandler = slot => {
+            insertPosition = slot;
+            renderTargetListWithSlots(container, targetPrompts, slot, slotHandler);
             updateButtons(container);
         };
         
@@ -288,20 +326,16 @@ async function openPromptMoverPopup() {
             sourcePresetName = e.target.value;
             selectedSourcePromptIndex = -1;
             sourcePrompts = sourcePresetName ? getPromptsFromPreset(openai_settings[openai_setting_names[sourcePresetName]]) : [];
-            renderPromptsList(container, 'pm-source-prompts', sourcePrompts, -1, srcHandler);
+            renderSourceList(container, sourcePrompts, -1, srcHandler);
             updateButtons(container);
         });
         
         container.querySelector('#pm-target-preset')?.addEventListener('change', e => {
             targetPresetName = e.target.value;
-            selectedTargetPromptIndex = -1;
+            insertPosition = -1;
             targetPrompts = targetPresetName ? getPromptsFromPreset(openai_settings[openai_setting_names[targetPresetName]]) : [];
-            renderPromptsList(container, 'pm-target-prompts', targetPrompts, -1, tgtHandler);
+            renderTargetListWithSlots(container, targetPrompts, -1, slotHandler);
             updateButtons(container);
-        });
-        
-        container.querySelector('#pm-insert-mode')?.addEventListener('change', e => {
-            insertMode = e.target.value;
         });
         
         container.querySelector('#pm-btn-move')?.addEventListener('click', () => performOperation(container, true));
