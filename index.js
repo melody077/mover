@@ -430,7 +430,6 @@ function addExtensionPanel() {
                     <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
                 </div>
                 <div class="inline-drawer-content">
-                    <p style="margin: 5px 0;">프롬프트 간에 이동합니다.</p>
                     <div id="pm-open-btn" class="menu_button menu_button_icon">
                         <i class="fa-solid fa-arrows-left-right"></i>
                         <span>Prompt Mover 열기</span>
