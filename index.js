@@ -168,10 +168,8 @@ function renderSourceList(container, orderedPrompts, selectedIndex, onSelect) {
         const name = prompt.name || prompt.identifier || 'Unnamed';
         const identifier = entry.identifier || '';
         const markerIcon = prompt.marker ? '📍 ' : '';
-        const enabledIcon = entry.enabled ? '✅' : '⬜';
         return `
             <div class="pm-prompt-item ${isSelected ? 'selected' : ''} ${!entry.enabled ? 'pm-disabled' : ''}" data-index="${index}">
-                <span class="pm-prompt-toggle">${enabledIcon}</span>
                 <span class="pm-prompt-index">#${index + 1}</span>
                 <span class="pm-prompt-name">${markerIcon}${name}</span>
                 <span class="pm-prompt-identifier">[${identifier}]</span>
@@ -210,11 +208,8 @@ function renderTargetListWithSlots(container, orderedPrompts, selectedSlot, onSe
         const name = prompt.name || prompt.identifier || 'Unnamed';
         const identifier = entry.identifier || '';
         const markerIcon = prompt.marker ? '📍 ' : '';
-        const enabledIcon = entry.enabled ? '✅' : '⬜';
-        
         html += `
             <div class="pm-prompt-item pm-target-item ${!entry.enabled ? 'pm-disabled' : ''}" data-index="${index}">
-                <span class="pm-prompt-toggle">${enabledIcon}</span>
                 <span class="pm-prompt-index">#${index + 1}</span>
                 <span class="pm-prompt-name">${markerIcon}${name}</span>
                 <span class="pm-prompt-identifier">[${identifier}]</span>
