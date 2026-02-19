@@ -121,7 +121,6 @@ function createPopupHtml(presets) {
             <div class="pm-section">
                 <div class="pm-section-title">📤 출발 프롬 </div>
                 <div class="pm-row">
-                    <label>프롬:</label>
                     <select id="pm-source-preset">
                         <option value="">-- 선택 --</option>
                         ${presetOptions}
@@ -135,7 +134,6 @@ function createPopupHtml(presets) {
             <div class="pm-section">
                 <div class="pm-section-title">📥 도착 프롬 - 삽입할 위치를 선택</div>
                 <div class="pm-row">
-                    <label>프롬:</label>
                     <select id="pm-target-preset">
                         <option value="">-- 선택 --</option>
                         ${presetOptions}
