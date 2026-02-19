@@ -69,7 +69,8 @@
 }
 
 #prompt-mover-container .pm-prompt-item.selected {
-    background-color: var(--SmartThemeChatTintColor);
+    background-color: rgba(100, 200, 100, 0.3);
+    font-weight: bold;
 }
 
 /* 삽입 슬롯 스타일 */
@@ -172,38 +173,80 @@
     max-width: 800px;
 }
 
+/* ---------------------------------------------------- */
+/* 모바일 반응형 스타일 (Mobile Responsive Styles) */
+/* ---------------------------------------------------- */
 @media (max-width: 768px) {
+    /* 팝업 전체 크기 및 위치 조정 */
     .pm-popup {
-        min-width: 90vw;
-        max-height: 85vh;
+        min-width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 0 auto;
+        left: 50% !important;
+        transform: translateX(-50%);
+        max-height: 90vh;
     }
-    
+
     #prompt-mover-container {
-        max-height: 75vh;
+        max-height: 80vh;
         overflow-y: auto;
+        padding: 5px;
     }
-    
+
     #prompt-mover-container .pm-section {
-        padding: 8px;
+        padding: 10px;
     }
-    
+
     #prompt-mover-container .pm-section-title {
-        font-size: 0.95em;
+        font-size: 1.1em;
+        margin-bottom: 8px;
     }
-    
+
     #prompt-mover-container .pm-row {
         flex-direction: column;
         align-items: stretch;
-        gap: 5px;
+        gap: 8px;
+        margin-bottom: 5px;
     }
-    
+
     #prompt-mover-container .pm-row label {
         min-width: auto;
-        font-size: 0.9em;
+        font-size: 1em;
+        font-weight: bold;
     }
-    
+
+    #prompt-mover-container select {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    /* 목록 영역을 모바일에서 훨씬 길게 표시 */
+    #prompt-mover-container .pm-prompt-list {
+        max-height: 35vh;
+    }
+
+    /* 목록 아이템 터치 영역 확대 */
+    #prompt-mover-container .pm-prompt-item {
+        padding: 12px 10px;
+        font-size: 1.05em;
+    }
+
+    /* 삽입 위치 슬롯도 터치하기 쉽게 확대 */
+    .pm-insert-slot {
+        padding: 12px 10px;
+        font-size: 1em;
+    }
+
+    /* 액션 버튼들을 세로로 꽉 차게 배치 */
+    #prompt-mover-container .pm-actions {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
     #prompt-mover-container button {
-        padding: 12px 24px;
+        width: 100%;
+        padding: 14px;
         font-size: 1.1em;
     }
 }
