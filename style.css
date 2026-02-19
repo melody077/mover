@@ -194,7 +194,7 @@
     }
 
     #prompt-mover-container .pm-section {
-        padding: 10px;
+        padding: 5px;
     }
 
     #prompt-mover-container .pm-section-title {
@@ -216,24 +216,24 @@
     }
 
     #prompt-mover-container select {
-        padding: 10px;
+        padding: 5px;
         font-size: 16px;
     }
 
     /* 목록 영역을 모바일에서 훨씬 길게 표시 */
     #prompt-mover-container .pm-prompt-list {
-        max-height: 35vh;
+        max-height: 30vh;
     }
 
     /* 목록 아이템 터치 영역 확대 */
     #prompt-mover-container .pm-prompt-item {
-        padding: 12px 10px;
+        padding: 10px 8px;
         font-size: 1.05em;
     }
 
     /* 삽입 위치 슬롯도 터치하기 쉽게 확대 */
     .pm-insert-slot {
-        padding: 12px 10px;
+        padding: 10px 8px;
         font-size: 1em;
     }
 
@@ -246,7 +246,7 @@
 
     #prompt-mover-container button {
         width: 100%;
-        padding: 14px;
+        padding: 10px;
         font-size: 1.1em;
     }
 }
