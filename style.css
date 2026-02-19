@@ -3,7 +3,7 @@
 #prompt-mover-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
     padding: 10px;
 }
 
@@ -46,6 +46,7 @@
 #prompt-mover-container .pm-prompt-list {
     max-height: 100px;
     overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid var(--SmartThemeBorderColor);
     border-radius: 3px;
     background-color: var(--SmartThemeBlurTintColor);
@@ -58,6 +59,8 @@
     gap: 10px;
     cursor: pointer;
     border-bottom: 1px solid var(--SmartThemeBorderColor);
+    overflow: hidden;
+    min-width: 0;
 }
 
 #prompt-mover-container .pm-prompt-item:last-child {
@@ -116,11 +119,18 @@
 #prompt-mover-container .pm-prompt-name {
     flex: 1;
     color: var(--SmartThemeBodyColor);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #prompt-mover-container .pm-prompt-identifier {
     font-size: 0.8em;
     color: var(--SmartThemeQuoteColor);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
 }
 
 #prompt-mover-container .pm-actions {
@@ -222,7 +232,7 @@
 
     /* 목록 영역을 모바일에서 훨씬 길게 표시 */
     #prompt-mover-container .pm-prompt-list {
-        max-height: 30vh;
+        max-height: 25vh;
     }
 
     /* 목록 아이템 터치 영역 확대 */
