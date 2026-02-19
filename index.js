@@ -119,30 +119,30 @@ function createPopupHtml(presets) {
     return `
         <div id="prompt-mover-container">
             <div class="pm-section">
-                <div class="pm-section-title">📤 출발 프리셋 (프롬프트 사용 순서)</div>
+                <div class="pm-section-title">📤 출발 프롬 </div>
                 <div class="pm-row">
-                    <label>프리셋:</label>
+                    <label>프롬:</label>
                     <select id="pm-source-preset">
                         <option value="">-- 선택 --</option>
                         ${presetOptions}
                     </select>
                 </div>
                 <div class="pm-prompt-list" id="pm-source-prompts">
-                    <div style="padding: 10px; text-align: center;">프리셋을 선택하세요</div>
+                    <div style="padding: 10px; text-align: center;">프롬을 선택하세요</div>
                 </div>
             </div>
             
             <div class="pm-section">
-                <div class="pm-section-title">📥 도착 프리셋 - 삽입할 위치를 선택</div>
+                <div class="pm-section-title">📥 도착 프롬 - 삽입할 위치를 선택</div>
                 <div class="pm-row">
-                    <label>프리셋:</label>
+                    <label>프롬:</label>
                     <select id="pm-target-preset">
                         <option value="">-- 선택 --</option>
                         ${presetOptions}
                     </select>
                 </div>
                 <div class="pm-prompt-list" id="pm-target-prompts">
-                    <div style="padding: 10px; text-align: center;">프리셋을 선택하세요</div>
+                    <div style="padding: 10px; text-align: center;">프롬을 선택하세요</div>
                 </div>
             </div>
             
@@ -250,7 +250,7 @@ async function performOperation(container, removeFromSource) {
     const targetSettingIndex = openai_setting_names[targetPresetName];
     
     if (sourceSettingIndex === undefined || targetSettingIndex === undefined) {
-        toastr.error('프리셋을 찾을 수 없습니다');
+        toastr.error('프롬을 찾을 수 없습니다');
         return;
     }
     
@@ -362,7 +362,7 @@ async function openPromptMoverPopup() {
         const presets = await loadAllPresets();
         
         if (Object.keys(presets).length === 0) {
-            toastr.warning('프리셋이 없습니다. Chat Completion API를 사용 중인지 확인하세요.');
+            toastr.warning('프롬이 없습니다. Chat Completion API를 사용 중인지 확인하세요.');
             return;
         }
         
@@ -432,7 +432,7 @@ function addExtensionPanel() {
                     <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
                 </div>
                 <div class="inline-drawer-content">
-                    <p style="margin: 5px 0;">프리셋 간에 프롬프트를 복사/이동합니다.</p>
+                    <p style="margin: 5px 0;">프롬프트 간에 이동합니다.</p>
                     <div id="pm-open-btn" class="menu_button menu_button_icon">
                         <i class="fa-solid fa-arrows-left-right"></i>
                         <span>Prompt Mover 열기</span>
