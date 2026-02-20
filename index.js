@@ -403,7 +403,7 @@ async function openPromptMoverPopup() {
             updateButtons(container);
         });
         
-        container.querySelector('#pm-btn-move')?.addEventListener('click', () => performOperation(container, true));
+        container.querySelector('#pm-btn-move')?.addEventListener('click', () => performOperation(container, false));
         
         await callGenericPopup(container, POPUP_TYPE.TEXT, '', { okButton: '닫기', cancelButton: false, wide: true });
         
